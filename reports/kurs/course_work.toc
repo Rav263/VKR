@@ -1,0 +1,82 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\babel@toc {russian}{}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {}Введение}{3}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {1}Цели и задачи работы}{4}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {2}Архитектура сетевого процессора}{5}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.1}Язык ассемблера сетевого процессора}{5}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {3}Постановка задачи}{7}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {4}Обзор структур данных для классификация пакетов в рамках рассматриваемой архитектуре сетевого процессора}{8}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.1}Метод подсчёта объёма памяти занимаемый рассматриваемой структурой данных}{9}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.2}Структуры данных для классификации пакетов в рамках рассматриваемой архитектуры сетевого процессора}{9}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2.1}бинарное однобитное дерево}{9}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2.2}Бинарное сжатое дерево}{10}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2.3}Мультибитное сжатое дерево}{12}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2.4}Мультибитное сжатое дерево с изменением микроархитектуры}{13}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2.5}Бинарный поиск по длинам префиксов}{13}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2.6}АВЛ дерево}{15}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.3}Сравнение структур данных}{15}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.4}Выводы}{17}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {5}Разработка структур данных}{18}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.1}Бинарное однобитное дерево}{18}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.2}Бинарное сжатое дерево}{19}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.2.1}Процедура удаления незначимых вершин}{19}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.3}АВЛ дерево}{20}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.3.1}Алгоритм представления префиксов как скалярных величин}{20}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.3.2}Алгоритм построения дерева}{20}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {6}Описание реализованных программных средств}{22}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6.1}Имитационная модель сетевого процессора}{22}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6.2}Описание программной реализации}{22}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.2.1}Модуль загрузки таблиц классификации}{23}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.2.2}Модули построения структур данных}{23}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.2.3}Модуль построения преобразования построенного дерева на язык ассемблера}{23}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6.3}Вспомогательные программные средства}{24}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {7}Экспериментально исследование реализованных структур данных}{25}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.1}Методика экспериментального исследования}{25}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.2}Результаты экспериментального исследования}{26}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.2.1}Бинарное однобитное дерево}{26}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.2.2}Бинарное сжатое дерево}{27}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.2.3}АВЛ дерево}{28}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.2.4}Сравнение структур данных}{29}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.3}Выводы}{30}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {8}Заключение}{31}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {}Список Литературы}{32}%

@@ -1,0 +1,107 @@
+\documentclass[conference]{IEEEtran}
+
+%\usepackage[russian]{babel}
+\usepackage[justification=centering]{caption}
+\usepackage[backend=bibtex]{biblatex}
+\usepackage{fontspec}
+\usepackage[final]{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+%\usepackage{geometry}
+\graphicspath{{./images/}}
+
+\setmainfont{Spectral Light}%{Times New Roman}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{white},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    morekeywords={*,procedure, if, rol, cmpj, setmask, then, else, endif, cmpjn, is, not, and, return},            % if you want to add more keywords to the set
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=10pt,
+    xleftmargin=7mm,
+    xrightmargin=0mm,
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4
+}
+\lstset{style=mystyle}
+\lstset{linewidth=9cm}
+\bibliography{syrcose} 
+
+
+\begin{document}
+\author{
+    \IEEEauthorblockN{Nikita Nikiforov}
+    \IEEEauthorblockA{\textit{Lomonosov Moscow State University}\\
+    Moscow, Russia\\
+    nickiforov.nik@gmail.com}
+    \and
+    \IEEEauthorblockN{Dmitry Volkanov}
+    \IEEEauthorblockA{\textit{Lomonosov Moscow State University}\\
+    Moscow, Russia\\
+    volkanov@asvk.cs.msu.ru}
+    }
+\title{
+    Data compression algorithms for flow tables in Network Processor (RuNPU).
+}
+\maketitle
+    \begin{abstract}
+        This paper addresses the problem of packet classification within a network processor (NP) architecture 
+        without the separate associative device.
+        By the classification, we mean the process of identifying a packet by the header.
+        The classification stage requires the implementation of data structures to store the flow tables.
+        In our work we consider NP without the associative memory. In considering NP flow tables
+        represent like an assembly language program. For translating flow tables into assembly language programs,
+        tables translator was used. 
+        Nowadays flow tables can take tens of megabytes of memory.
+        This is the reason for implement data compression algorithms in flow table translator.
+        In this work we provide the data compression algorithms: Optimal rule caching, recursive end-point cutting and
+        bit string compression. An evaluation of the implemented data compression algorithms was performed on a 
+        simulation model of the NP.
+    \end{abstract}
+    
+    \begin{IEEEkeywords}
+        Network processor, software-defined networks, packet classification, data compression.
+    \end{IEEEkeywords}
+
+    \section{Introduction}
+        At present, software-defined networks (SDN) are in active developing and require high-performance switches.
+        The main functional element of the high-performance SDN switch is programmable network processor.
+        The network processor is system-on-chip specialized for network packet processing. In our work we consider
+        the programmable NP. By programmable we mean such NP, that supports to change the packet processing program 
+        and the set of processed header fields on the fly. 
+        
+        This article will discuss about data compression algorithms used for flow tables. 
+        Flow tables needs for packet classification process. Flow table is the set of flows, that defines
+        by OpenFlow protocol. Each rule contains match field, bit string by witch a packet can be identified 
+        and set of actions, that NP performs on this packet.
+        The classification is the process of identification a network packet by it's header. 
+        
+    \section{Network processor architecture}
+    \section{The problem}
+    \section{Related work}
+    \section{Our solution}
+    \section{Evaluation}
+    \section{Future work}
+ \printbibliography{}
+\end{document}

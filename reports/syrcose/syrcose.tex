@@ -62,7 +62,7 @@
     volkanov@asvk.cs.msu.ru}
     }
 \title{
-    Data compression algorithms for flow tables in Network Processor (RuNPU).
+    Data compression algorithms for flow tables in Network Processor RuNPU.
 }
 \maketitle
     \begin{abstract}
@@ -70,12 +70,12 @@
         without the separate associative device.
         By the classification, we mean the process of identifying a packet by the header.
         The classification stage requires the implementation of data structures to store the flow tables.
-        In our work we consider NP without the associative memory. In considering NP flow tables
-        represent like an assembly language program. For translating flow tables into assembly language programs,
-        tables translator was used. 
-        Nowadays flow tables can take tens of megabytes of memory.
-        This is the reason for implement data compression algorithms in flow table translator.
-        In this work we provide the data compression algorithms: Optimal rule caching, recursive end-point cutting and
+        In our work we consider the NP without the associative memory. 
+        Flow tables are represented by an assembly language program in the NP. For translating flow tables into assembly language programs,
+        a tables translator was used. 
+        The main reason for implementing data compression algorithms in a flow table translator is that nowadays 
+        flow tables can weight up to tens of megabytes.
+        In this work we describe the data compression algorithms: Optimal rule caching, recursive end-point cutting and
         bit string compression. An evaluation of the implemented data compression algorithms was performed on a 
         simulation model of the NP.
     \end{abstract}
@@ -85,97 +85,118 @@
     \end{IEEEkeywords}
 
     \section{Introduction}
-        At present, software-defined networks (SDN) are in active developing and require high-performance switches.
-        The main functional element of the high-performance SDN switch is programmable network processor.
-        The network processor is system-on-chip specialized for network packet processing. In our work we consider
-        the programmable NP. By programmable we mean such NP, that supports to change the packet processing program 
+        At present, software-defined networks (SDN) are in active development and require high-performance switches~\cite{smel2012open}.
+        The main functional element of the high-performance SDN switch is a programmable network processor (NP).
+        The network processor is a system-on-chip specialized for network packet processing. In our work we consider
+        a programmable NP. By programmable we mean such NP, that supports changing the packet processing program 
         and the set of processed header fields on the fly. 
         
-        This article will discuss about data compression algorithms used for flow tables. 
-        Flow tables needs for packet classification process. Flow table is the set of flows, that defines
-        by OpenFlow protocol. Each rule contains match field, bit string by witch a packet can be identified 
-        and set of actions, that NP performs on this packet.
-        The classification is the process of identification a network packet by it's header. 
-        
-    \section{Network processor architecture}
-            \label{section:problem}
-        In considered NP the pipeline architecture is used, each pipeline consists of 10 computing blocks. 
-        To avoid complex organization of memory, there is no associative memory in the considered NP. 
-        The NP uses the same memory for commands and data.
-         
-        Let consider the pipeline NP architecture. 
-        Each computing block has access to the memory area where the program with data are located.
-        There is a limit on the number of clock cycles that one packet can process on a processing block, 
-        it corresponds to 25 clock cycles.
-        All memory to store assembly language program that represents flow tables is 512 kilobytes.
-        Due to the instruction set architecture, there is no separate memory area where data is stored. 
-        Therefore, the microcode contains all the data, required to classify packets.
-        \subsection{Flow tables translator}
-            Flow table translator is a tool that performs on CPU. It used for flow table translating
-            into assembly language program, that can by interprited by NP.
+        In this article we discuss data compression algorithms used for flow tables. 
+        Flow tables are needed for packet classification process. A flow table is the set of rules defined
+        by OpenFlow protocol. Each rule contains a match field, a bit string by witch a packet can be identified 
+        and a set of actions, that the NP performs on this packet.
+        Classification is the process of the identification of a network packet by its header. 
+    
+        This article has the following structure: in second section we introduce problem, in third section we introduce
+        the NP architecture and flow tables translator, in fourth section we describe related work, in fifth section 
+        we describe data compression algorithm implementation and in sixth section we introduce our evaluation methodology. 
+    
     \section{The problem}
     \label{sect:problem}
-        Let consider OpenFlow tables formalisation. Ordered set of all considered attributes we'll denote as \(I=\{m_1,m_2,\ldots,m_k\}\). 
-        Every attribute \(m_i\) from the set \(I\) described by bit string \(m_i \in \{0, 1, *\}^W_i\).
-        In this article symbol \(*\) denote any bit. But, if \(\exists m_i^j \in m_i\) and  \( m_i^j = *\), 
-        then for \( \forall m_i^k \), where \(k > j\), and \( m_i^k = *\). Length of the attribute will be \(len(m_i) = W_i\).
+        Let us consider OpenFlow tables formalisation. An ordered set of all considered attributes is denoted as \(I=\{m_1,m_2,\ldots,m_k\}\). 
+        Every attribute \(m_i\) from the set \(I\) is described by a bit string \(m_i \in \{0, 1, *\}^W_i\).
+        In this article symbol \(*\) denotes any bit. But, if \(\exists m_i^j \in m_i\) and  \( m_i^j = *\), 
+        then for \( \forall m_i^k \), where \(k > j\), \( m_i^k = *\). The length of the attribute is denoted \(len(m_i) = W_i\).
 
-        Flow table will be represented as set of rules \(R=\{r_1,r_2,\ldots,r_n\}\). With every rule \(r_i\) bind the features:
+        Flow tables are represented by a set of rules \(R=\{r_1,r_2,\ldots,r_n\}\). With every rule \(r_i\) binding the features:
         \begin{itemize}
-            \item Index \(i\);
-            \item Priority \(p_i \in \mathbb{Z}_+\);
-            \item Vector values of the attributes \(f_i=\{f_i^1,f_i^2,\ldots,f_i^k\}\), there \(f_i^j\) is attribute value \(m_j\in I\). % и \(f_i^j\in D(m_j)\cup\{*\}\), \(j=\overline{1,k}\).
-            \item Set of actions \(A_i = \{a_1, a_2, \ldots, a_z\} \).
+            \item An index \(i\);
+            \item A priority \(p_i \in \mathbb{Z}_+\);
+            \item A vector of values of attributes \(f_i=\{f_i^1,f_i^2,\ldots,f_i^k\}\), where \(f_i^j\) is an attribute value \(m_j\in I\). % и \(f_i^j\in D(m_j)\cup\{*\}\), \(j=\overline{1,k}\).
+            \item A set of actions \(A_i = \{a_1, a_2, \ldots, a_z\} \).
         \end{itemize}
 
-        Network packet header \(x\) and its metadata with vector values of the attributes \(g=\{g^1,g^2,\ldots,g^k\}\) (\(x \rightarrow g\)),
-        match rule \(r_i\in R\) with vector values of the attributes \(f_i=\{f_i^1,f_i^2,\ldots,f_i^k\}\) 
-        and priority \(p_i\) (Rule \(r_i\in R\) identifies network packer with vector values of the attributes \(g\)), if:
+        A network packet header \(x\) and its metadata with vector values of attributes \(g=\{g^1,g^2,\ldots,g^k\}\) (\(x \rightarrow g\)),
+        a match rule \(r_i\in R\) with a vector of values of the attributes \(f_i=\{f_i^1,f_i^2,\ldots,f_i^k\}\) 
+        and a priority \(p_i\) (a rule \(r_i\in R\) identifies a network packer with a vector values of attributes \(g\)), if:
 
         \begin{enumerate}
-            \item vector values of the attributes \(g\) match vector values of the attributes \(f_i\), 
+            \item a vector values of attributes \(g\) match a vector of values of the attributes \(f_i\), 
                 \(\forall g_i \in g\), \(len(g_i) = len(f_i)\). \(\forall f_i^{lj} \in f_i^l\), \(f_i^{lj} \in \{*, g^{lj}\}\), \(l=\overline{1,k}\);
-            \item the priority \(p_i\) is the highest among all rules \(r_j\in R\), witch vector \(g\) match vector\(f_j\).
+            \item a priority \(p_i\) is the highest among all rules \(r_j\in R\), if a vector \(g\) match a vector\(f_j\).
         \end{enumerate}
 
         The set of rules \(R\) must satisfy the following constraint. 
         For any two rules \(r_i,r_j\in R,r_i\not= r_j\),  if their vectors of values intersect, there is a set of attribute values. 
         This set corresponds to vectors of values of attributes of both rules  \(p_i\not= p_j\). 
         
-        Let's introduce the function for network packet identification \(x \rightarrow g\)in flow table \(R\), (will be note as \(R(x)\)).
-        It will return a set of actions, that corresponds the rule \(x \rightarrow g\). 
+        Let us introduce the function for network packet identification \(x \rightarrow g\)in flow table \(R\), (denotes as \(R(x)\)).
+        It returns a set of actions, that corresponded to the rule \(x \rightarrow g\). 
         \begin{center}
-            \(R(x) = A_{r_i}\), there \(A_{r_i}\) is the set of actions \(r_i \in R\).
+            \(R(x) = A_{r_i}\), where \(A_{r_i}\) is the set of actions \(r_i \in R\).
         \end{center}
 
-        We need introduce similar concept of the sets of rules \(R_1\) and \(R_2\).
+        We need to introduce a {\bf similar concept} of the sets of rules \(R_1\) and \(R_2\).
         The set \(R_1\) is similar to the set \(R_2\), when for any network packet header, 
-        that can be identified by some rule from the set \(r_i \in R_1\).
-        And for this network packet header exist another rule that identifies it \(r_j \in R_2\), and \(A_i = A_j\).
+        that can be identified by some rule from the set \(r_i \in R_1\),
+        and there exists another rule that identifies it as \(r_j \in R_2\), and \(A_i = A_j\).
 
-        We need to develop algorithm for compressing flow tables. This algorithm must translate input flow table (the set of rules \(R_1\)
-        into new compressed set of rules \(R_2\). 
+        We need to develop an algorithm for compressing flow tables. This algorithm must translate an input flow table (a set of rules \(R_1\))
+        into a new compressed set of rules \(R_2\). 
         \begin{enumerate}
             \item The set of rules \(R_1\) is similar to the set of rules \(R_2\).
-            \item Power of the set \(R_2\) must be lower than power of the set \(R_1\).
+            \item The cardinality of the set \(R_2\) must be lower than the cardinality of the set \(R_1\).
         \end{enumerate}
+    
+    \section{Network processor architecture}
+            \label{section:problem}
+        In the considered NP the pipeline architecture is used, with each pipeline consisting of 10 computing blocks. 
+        To avoid complex memory organization, there is no associative memory in the considered NP. 
+        The NP uses the same memory both for commands and data.
+         
+        Let us consider the pipeline NP architecture. 
+        Each computing block has an access to the memory area where the program with data is located.
+        There is a limit of 25 clock cycles per packet on each processing block.
+        There is up to 512 kilobytes to store assembly language program representing flow tables.
+        Due to the instruction set architecture, there is no separate memory area where data is stored. 
+        Therefore, the microcode contains all the data, required to classify packets.
+        
+        \subsection{Flow tables translator}
+            Flow tables translator is a tool that is executed on CPU. It is used for flow tables translating
+            into assembly language programs, that can be interpreted by NP. Flow tables translator uses 
+            tree structures for flow table representation.
+            Every node of the tree structure can be associated with a table rule. 
+            After building a tree every node is translated into a part of an assembly
+            language program. Here is a flow tables translator workflow:
+            \begin{enumerate}
+                \item Load a flow table from file.
+                \item Check every rule in the table.
+                \item Build a tree structure from a set of rules.
+                \item Translate every node into a part of an assembly language program.
+                \item Combine all translated parts into the one assembly language program.
+                \item Add a header that corresponds to used protocol.
+                \item Write the assembly language program into file.
+            \end{enumerate}
+
+            This tool was implemented in work~\cite{andrewmonetec}.
 
     \section{Related work}
-        In this section we'll take a view on data compression algorithms, that already used
-        for other network processors. We need to choose algorithms for use in our NP.
-        For choosing algorithms we implemented criteria.
+        In this section we  introduce a review on data compression algorithms, that already used
+        for other network processors~\cite{braun2014wildcard}. 
+        To choose algorithms for implementation in NP we used the following criteria:
         \begin{enumerate}
-            \item Compression rate, needs for algorithm performance evaluation.
+            \item Compression rate, is needed for algorithm performance evaluation.
             \item Evaluation of compression algorithm complexity.
-            \item Usability compressed flow tables without decompression.
-            \item The need to use external memory by the algorithm.
+            \item Usability of compressed flow tables without decompression.
+            \item The necessity to use external memory by the algorithm.
         \end{enumerate}
 
         \subsection{Most common data compression algorithms}
             Data compression algorithms have evolved over the years. Nowadays compression 
-            algorithms can be used in many different ways. In this section we'll take a view
-            on the algorithms that compressed data in binary format.
+            algorithms can be used in many different ways. In this section we describe
+            the algorithms that compress data in binary format.
             There are most known of them:
+            
             \begin{itemize}
                 \item Huffman codding,
                 \item JPEG,
@@ -183,64 +204,137 @@
                 \item zip.
             \end{itemize}
   
-            These algorithms needs decompression for data usage. And this is why
-            we'll not use them in our flow table translator.
+            These algorithms require decompression for data usage. And this is why
+            we will not use them in our flow table translator.
+        
         \subsection{Optimal rule caching}
-            This is more specify data compressing algorithm. It used for table compressing in SND switches.
-            It's based on search tree structure, that builds based on rules usage frequencies.
-            There are two trees. The first tree - most usable rules. This tree translates into assembly
-            language program. The second tree - another rules, it stores in CPU memory.
+            Optimal rule caching algorithm is more specific data compression algorithm. 
+            It is used for table compressing in SND switches~\cite{rottenstreich2016optimal}.
+            It is based on search tree structure, that is built based on rules usage frequencies.
+            There are two trees: the first tree consist from most used rules. This tree is translated into assembly
+            language program. The second tree consist from other rules, it is stored in CPU memory.
+        
         \subsection{Recursive end point cutting}
-            This algorithm based on HyperSplit tree usage. Compressing performs by destroying duplication rules~\cite{chang2019fast}.
-            This algorithm allows operations with flow table without dull rebuilding tree.
+            Recursive end-point cutting algorithm is based on HyperSplit tree usage. Compressing is performed by destroying duplication rules~\cite{chang2019fast}.
+            This algorithm permits operations with flow tables without full rebuilding tree.
 
-            By rules duplication we'll understand next rules:
+            By rules duplication we understand the folowing rules:
             \begin{itemize}
-                \item The rule, that contains in node duplicates by rule in leaf node. (particle duplication).
-                \item The rule, that contains in node duplicates by rules in all leafs nodes. (full duplicating rule).
+                \item A rule, storing in node duplicates of the rules in leaf nodes. (particle duplication).
+                \item A rule, storing in node duplicates of the rules in all leafs nodes. (full duplicating rule).
             \end{itemize}
+        
+            This algorithm recursively uses NewHypersplit tree to remove duplicate rules from the currently being built tree. 
+            The deleted duplicate rules are then collected into a second rule table, called a recursive table, to build a second tree. 
+            It is possible that duplicate rules still exist in the second tree, and some of them are also removed 
+            and used to build the third tree. 
+            This tree building process is performed recursively while there are duplicate rules in the last tree.
+        \section {Algorithms comparison}
+       \begin{table*}[!t]
+           \centering
+            \caption{Data compression algorithms comparison}\label{tab:tab1}
+            \begin{tabular}{|m{3.5cm}|m{2.5cm}|m{2cm}|m{3.5cm}|m{4cm}|}
+                \hline
+                \bf Name & \bf complexity of construction  & \bf Степень сжатия & \bf Внешняя память & \bf Необходимость декомпрессии \\
+                \hline
+                Алгоритм оптимального кеширования & $O(N^2)$ & \(0.1 \ldots 0.9\) & да & нет \\
+                \hline
+                Алгоритм рекурсивного удаления & $O(N*log(N))$ & \(0.1\) & нет & нет \\
+                \hline
+                Алгоритм с использованием битовых строк & $O(\frac{W}{K}*L)$ & \(0.5\) & нет & нет \\
+                \hline
+                Распространённые алгоритмы & $O(K*\log_2{N})$ & \(0.1 \ldots 0.8\) & нет & да \\
+                \hline
+            \end{tabular}
+        \end{table*}
+        
+        У каждого рассмотренного алгоритма сжатия есть свои достоинства и недостатки, рассмотрим их:
+        \begin{enumerate}
+            \item \textbf{Алгоритм оптимального кеширования} \(-\) имеет наибольший коэффициент сжатия, и быстро реализуем в рассматриваемой архитектуре сетевого процессорного устройства. 
+                Необходимость использования внешней памяти накладывает дополнительные расходы на обработку некоторых пакетов.
+            \item \textbf{Алгоритм рекурсивного удаления} \(-\) имеет наименьший коэффициент сжатия,
+                реализуем сложнее, чем алгоритм оптимального кеширования. При этом данный алгоритм не требует использования внешней памяти.
+            \item \textbf{Алгоритм с использованием битовых строк} \(-\) имеет средний коэффициент сжатия, но при этом трудно реализуем в рассматриваемой архитектуре сетевого процессорного устройства.
+            \item \textbf{Распространённые алгоритмы сжатия} \(-\) в среднем имеют хорошие коэффициенты сжатия, но при этом требуется декомпрессия данных.
+        \end{enumerate}
+  
     \section{Our solution}
-                Введём операцию последнего значащего бита признака \(last(m_i) = j\), такое, что \(m_i^j \in \{0, 1\}\) и \(m_i^{(j+1)} = *\). 
-        Назовём правила \(r_i \in R\) и \(r_j \in R\) похожими, 
-        если для \(\forall u \in len(f_i)\) верно, что \(last(f_i^u) = last(f_j^u) = l\), при этом \(f_i^{ul} \neq f_j^{ul}\), и \(A_i = A_j\).
-        Для описания данного алгоритма потребуется ввести дополнительные обозначения. Введём понятие распределения заголовков пакетов \(P\),
-            где \(p_x\) обозначает вероятность получения пакета \(x \rightarrow g=\{g^1,g^2,\ldots,g^k\}\).
-            Также введём понятие коэффициента правильности \(T_P(R_1, R_2)\), где \(R_1\) и \(R_2\) две различные таблицы потоков. 
-            Таким образом коэффициент правильности обозначает вероятность того, что заголовок пакета, согласно распределению \(P\),
-            будет в идентифицироваться правилами \(r_1 \in R_1\) и \(r_2 \in R_2\) и их наборы действий совпадают \(A_1 = A_2, A_1 \in r_1, A_2 \in r_2\).
-            
-            \[T_P(R_1, R_2) = \sum_{x \rightarrow g, R_1(x) = R_2(x)} p_x\]
+        In this section we introduce our solution of flow tables compressing.
+        \subsection{Flow table optimization}
+            First of all we need to introduce operation {\bf getting last important bit} 
+            \(last(m_i) = j\), \(m_i^j \in \{0, 1\}\) and \(m_i^{(j+1)} = *\). 
+            We claim that the rules \(r_i \in R\) and \(r_j \in R\) are the {\bf same}, 
+            if \(\forall u \in len(f_i)\) \(last(f_i^u) = last(f_j^u) = l\), but \(f_i^{ul} \neq f_j^{ul}\) and \(A_i = A_j\).
+            For flow table optimization we need to remove all {\bf same} rules.
 
-            Введём оптимальное значение коэффициента правильности для заданной таблицы потоков \(R\), числа правил \(n\) и распределения заголовков \(P\).
-            \[\zeta(n, R, P) = \max_{R_i, |R_i| <= n} T_P(R, R_i)\]
-            
-            Таким образом алгоритму необходимо найти и построить таблицу потоков \(R_a\), основанную на данной таблице потоков \(R\)
-            с наименьшим количеством правил \(n_0\) и максимальные оптимальным коэффициентом правильности \(\zeta(n, R, P)\).
-            Пусть \(p^i\) популярность (вероятность) выбора правила \(r_i \in R\), в соответствие с распределением заголовков \(P\). Пусть
-            правила в таблице потоков \(R\) расположены в порядке не возрастания их популярности. Тогда:
-            \[\zeta(n, R, P) \geq \sum_{i \in [1, n]} p^i + 1 - \sum_{i \in [1, n_0]} p^i \geq n/n_0\]
+        \subsection{Main flow table compression algorithm}
+            Let us introduce a packet header distribution \(P\), where \(p_x\) mean network packet income probability\(x \rightarrow g=\{g^1,g^2,\ldots,g^k\}\).
+        We need a correction ratio \(T_P(R_1, R_2)\), where \(R_1\) and \(R_2\) are two different flow tables. 
+        Thus correction ratio means probability of incoming network packet header by distribution \(P\).
+        As well as probability of identifying this network packet by rules \(r_1 \in R_1\) and \(r_2 \in R_2\).
+        Moreover the sets of actions of this rules are similar \(A_1 = A_2, A_1 \in r_1, A_2 \in r_2\).
+        
+        \[T_P(R_1, R_2) = \sum_{x \rightarrow g, R_1(x) = R_2(x)} p_x\]
 
-
-    \section{Evaluation}
-            Для оценки параметров необходимо исследовать программу на языке ассемблера, получаемую при использовании
-            системы трансляции с алгоритмами сжатия и без. Для каждой программы, с помощью эмулятора сетевого процессорного устройства,
-            будут исследоваться следующие параметры:
+        The optimal correction ratio for flow table \(R\) and a number of rules \(n\) and a network packet header distribution \(P\) is:
+        \[\zeta(n, R, P) = \max_{R_i, |R_i| <= n} T_P(R, R_i)\]
+        
+        Let \(p^i\) be probability of choosing rule \(r_i \in R\), in distribution \(P\). Let
+        rules in flow table \(R\) be in not-increasing order of their probabilities. Then:
+        \[\zeta(n, R, P) \geq \sum_{i \in [1, n]} p^i + 1 - \sum_{i \in [1, n_0]} p^i \geq n/n_0\]
+        
+        This algorithm needs exploration and building a flow table \(R_a\), based on input flow table \(R\). 
+        There is a minimal set of rules (\(n_0\)) and a maximum optimal correction ratio \(\zeta(n, R, P)\).
+        
+        \subsection{Software solution}
+            In this section we introduce software workflow of our algorithm.
+            First of all we need to add a new fields in tree structure nodes for our algorithm.
             \begin{itemize}
-                \item Объём памяти занимаемой программой при обработке пакетов на эмуляторе сетевого процессорного устройства.
-                \item Среднее время обработки пакета в тактах сетевого процессорного устройства.
+                \item A probability into tree node. It must be filled if node contains rule.
+                \item A sum of probabilities of leaf nodes.
             \end{itemize}
             
-            Для проведения экспериментального исследования, необходимо последовательно выполнять следующие действия для каждого набора входных данных:
-            \begin{enumerate}
-                \item Выбрать таблицу потоков для данного эксперимента.
-                \item Провести трансляцию выбранной таблицы потоков в программу на языке ассемблера:
-                    \subitem $-$ без использования алгоритмов сжатия, обычное дерево;
-                    \subitem $-$ без использования алгоритмов сжатия, с АВЛ деревом;
-                    \subitem $-$ с использованием разработанных алгоритмов сжатия.
-                \item Провести эмуляцию работы сетевого процессорного устройства с полученными программами на языке ассемблера.
-                \item Провести оценку результатов полученных в данном эксперименте.
-            \end{enumerate}
+            Let us introduce program operation for split tree.
+            \begin{itemize}
+                \item Generate a set of tree nodes.
+                \item Sort this set in non-increasing order.
+                \item Create a counter that stores a sum of node probabilities.
+                \item Get the first node with maximum self probability.
+                \item Increase the counter.
+                \item Add this node into another set and remove from first.
+                \item Repeat last three operations while counter less then \(0.95\).
+                \item Build tree from second set of rules.
+            \end{itemize}
+
+            After performing this operations we get the set of nodes. We could build first tree
+            from second set of rules and second tree from first set of nodes. After this  we need to translate the
+            first tree into an assembly language program.
+    \section{Evaluation}
+        In this section we talk about evaluation methodology. Flow table compression algorithms can be evaluated by an 
+        assembly language program evaluation, from the flow tables translator with implementing
+        this flow table compression algorithm.
+        We used the following parameters in our evaluation:
+        \begin{itemize}
+            \item memory usage by assembly language program.
+            \item middle time of network packet processing in NP cycles.
+            \item maximum time of network packet processing in NP cycles.
+        \end{itemize}
+        
+        The described analysis requires to execute the following actions for each flow table.
+
+        \begin{enumerate}
+            \item Choose a flow table for this experiment.
+            \item Translate the flow table using flow tables translator implementation based on:
+                \subitem $-$ LPM tree;
+                \subitem $-$ AVL tree;
+                \subitem $-$ Our flow table compression algorithm.
+            \item Execute simulation on NP simulation model.
+            \item Evaluate results.
+        \end{enumerate}
 
     \section{Future work}
+        In the future we will refine evaluation data. We expect less memory usage with our compression algorithm implemented
+        into flow table translator. After this we could research possibility of TCAM memory implementation and use this 
+        compression algorithms for it.
  \printbibliography{}
 \end{document}

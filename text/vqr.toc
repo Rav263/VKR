@@ -5,13 +5,21 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {chapter}{\numberline {1}Цели и задачи работы}{6}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {2}Рассматриваемая архитектура сетевого процессора}{7}{}%
+\contentsline {chapter}{\numberline {2}Обзор предметной области}{7}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {3}Постановка задачи}{9}{}%
+\contentsline {section}{\numberline {2.1}Протокол OpenFlow}{7}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {3.1}Не формальная постановка задачи}{9}{}%
+\contentsline {subsection}{\numberline {2.1.1}Таблица потоков}{7}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {3.2}Формальная постановка задачи}{9}{}%
+\contentsline {section}{\numberline {2.2}Архитектура сетевого процессора}{8}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.3}Язык ассемблера сетевого процессора}{8}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {3}Постановка задачи}{10}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.1}Не формальная постановка задачи}{10}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.2}Формальная постановка задачи}{10}{}%
 \defcounter {refsection}{0}\relax 
 \contentsline {chapter}{\numberline {4}Обзор существующих алгоритмов сжатия}{12}{}%
 \defcounter {refsection}{0}\relax 
@@ -21,40 +29,40 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {4.2.1}Распространённые алгоритмы}{13}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.2.2}Алгоритм оптимального кеширования}{14}{}%
+\contentsline {subsection}{\numberline {4.2.2}Алгоритм оптимального кеширования}{13}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.2.3}Алгоритм Recursive endpoint cutting}{15}{}%
+\contentsline {subsection}{\numberline {4.2.3}Алгоритм Recursive endpoint cutting}{14}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.2.4}Алгоритм с использованием битовых векторов для представления таблиц потоков}{16}{}%
+\contentsline {subsection}{\numberline {4.2.4}Алгоритм с использованием битовых векторов для представления таблиц потоков}{15}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4.3}Сравнение алгоритмов сжатия}{16}{}%
+\contentsline {section}{\numberline {4.3}Сравнение алгоритмов сжатия}{15}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4.4}Выводы}{18}{}%
+\contentsline {section}{\numberline {4.4}Выводы}{16}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {5}Эмулятор сетевого процессора}{19}{}%
+\contentsline {chapter}{\numberline {5}Эмулятор сетевого процессора}{17}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5.1}Описание программных средств эмулятора сетевого процессора}{19}{}%
+\contentsline {section}{\numberline {5.1}Описание программных средств эмулятора сетевого процессора}{17}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5.2}Программные средства разработанные для проведения экспериментального исследования}{20}{}%
+\contentsline {section}{\numberline {5.2}Программные средства разработанные для проведения экспериментального исследования}{17}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {6}Система трансляции таблиц потоков в язык ассемблера сетевого процессорного устройства}{21}{}%
+\contentsline {chapter}{\numberline {6}Система трансляции таблиц потоков в язык ассемблера сетевого процессорного устройства}{19}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {6.1}Структуры данных}{21}{}%
+\contentsline {section}{\numberline {6.1}Структуры данных}{19}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.1.1}Структура данных для представления таблиц потоков в виде дерева}{21}{}%
+\contentsline {subsection}{\numberline {6.1.1}Структура данных для представления таблиц потоков в виде дерева}{19}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.1.2}Структура данных для представления таблиц потоков в виде АВЛ дерева}{22}{}%
+\contentsline {subsection}{\numberline {6.1.2}Структура данных для представления таблиц потоков в виде АВЛ дерева}{20}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.1.3}Структура данных для промежуточного представления таблицы потоков}{22}{}%
+\contentsline {subsection}{\numberline {6.1.3}Структура данных для промежуточного представления таблицы потоков}{20}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {7}Экспериментально исследование реализованных алгоритмов сжатия данных}{24}{}%
+\contentsline {chapter}{\numberline {7}Экспериментально исследование реализованных алгоритмов сжатия данных}{21}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7.1}Методика экспериментального исследования}{24}{}%
+\contentsline {section}{\numberline {7.1}Методика экспериментального исследования}{21}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7.2}Результаты экспериментального исследования}{25}{}%
+\contentsline {section}{\numberline {7.2}Результаты экспериментального исследования}{22}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7.3}Выводы}{25}{}%
+\contentsline {section}{\numberline {7.3}Выводы}{22}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {8}Заключение}{26}{}%
+\contentsline {chapter}{\numberline {8}Заключение}{23}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {}Список Литературы}{27}{}%
+\contentsline {chapter}{\numberline {}Список Литературы}{24}{}%

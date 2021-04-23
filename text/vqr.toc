@@ -55,14 +55,26 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {6.1.3}Структура данных для промежуточного представления таблицы потоков}{20}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {7}Экспериментально исследование реализованных алгоритмов сжатия данных}{21}{}%
+\contentsline {section}{\numberline {6.2}Алгоритмы сжатия}{20}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7.1}Методика экспериментального исследования}{21}{}%
+\contentsline {subsection}{\numberline {6.2.1}Использованные обозначения}{20}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7.2}Результаты экспериментального исследования}{22}{}%
+\contentsline {subsection}{\numberline {6.2.2}Алгоритм предварительной оптимизации таблицы потоков}{21}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7.3}Выводы}{22}{}%
+\contentsline {subsection}{\numberline {6.2.3}Алгоритм оптимального кеширования}{22}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {8}Заключение}{23}{}%
+\contentsline {subsubsection}{Алгоритм получения множества первостепенных вершин}{23}{}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {}Список Литературы}{24}{}%
+\contentsline {chapter}{\numberline {7}Экспериментально исследование реализованных алгоритмов сжатия данных}{24}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.1}Методика экспериментального исследования}{24}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.1.1}Данные экспериментального исследования}{25}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.2}Результаты экспериментального исследования}{25}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.3}Выводы}{25}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {8}Заключение}{26}{}%
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {}Список Литературы}{27}{}%

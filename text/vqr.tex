@@ -8,6 +8,8 @@
 %\usepackage{booktabs}
 \usepackage{tikz}
 \usepackage{geometry}
+\usepackage{float}
+\usepackage{listings}
 \usepackage{indentfirst}
 \usepackage{fontspec}
 \usepackage{graphicx}
@@ -23,6 +25,35 @@
 \setmonofont{Noto Sans}
 %\setcounter{secnumdepth}{3}
 %\setcounter{tocdepth}{3}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{white},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    morekeywords={*,procedure, if, rol, cmpj, setmask, then, else, endif, cmpjn, is, not, and, return},            % if you want to add more keywords to the set
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=10pt,
+    xleftmargin=7mm,
+    xrightmargin=0mm,
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4
+}
+\lstset{style=mystyle}
+%\lstset{linewidth=9cm}
 
 \bibliography{vqr} 
 
@@ -429,7 +460,110 @@
                 \begin{itemize}
                     \item Величина \(P(S)\) соответствующая сумме частот использования каждого правила из подмножества \(S \subset R\). 
                         \(P(S) = \sum_{r_i \in S} P(r_i)\).
+                    \item Величина \(P(N)\) соответствующая сумме частот использования потомков данной вершины. \(P(N) = \sum_{f_i \in M} P(N(f_i))\).
+                        Если у данной вершины нет потоков, то \(P(N) = P(S)\).
                 \end{itemize}
+        \section{Алгоритмы сжатия}
+           \subsection{Использованные обозначения}
+                Пусть \(node_1\), \(node_2\)~--- вершины дерева, \(value\)~--- некоторое значение признака. Введем следующие обозначения:
+                \begin{itemize}
+                    \item \(Tree.root\)~--- корневая вершина дерева \(Tree\).
+                    \item \(node_1(value)\)~--- потомок вершины \(node_1\), связанный с ней дугой с пометкой \(value\).
+                    \item \(node_1.rules\)~--- множество правил, соответствующее вершине \(node_1\).
+                    \item \(node_1.edges\)~--- множество пометок дуг, исходящих из вершины \(node_1\).
+                    \item \(copy(node_1, val, node_2)\)~--- процедура, которая добавляет к вершине \(node_1\) потомка с дугой, помеченной \(val\), копируя дерево, которое образует вершина \(node_2\).
+                    \item \(remove(node_1, val)\)~--- процедура, которая удаляет из вершины \(node_1\), поддерево с дугой помеченной \(val\). 
+                    \item \(equals(node_1, node_2)\)~--- функция, которая возвращает \(true\), если деревья, образованные вершинами \(node_1\) и \(node2\) совпадают, иначе возвращает \(false\). При сравнении учитываются связанные с вершинами множества правил и пометки дуг.
+                    \item \(isleaf(node_1)\)~--- функция, которая возвращает \(true\), если \(node_1\)~--- лист дерева, иначе возвращает \(false\).
+                \end{itemize}
+            \subsection{Алгоритм предварительной оптимизации таблицы потоков}
+                В данном разделе будет описан алгоритм предварительной оптимизации таблиц потоков. Для начала необходимо ввести
+                операцию {\bf Same}, которая на вход получает две вершины дерева и возвращает множество правил, которые были получены путём объединения 
+                похожих правил.
+\begin{lstlisting}[float=htb]
+procedure Same(node_1, node_2):
+    rules = {}
+    for all rule_1 in node_1.rules do
+        for all rule_2 in node_2.rules do
+            if same(rule_1, rule_2) then
+                rules += {rule_1 union rule_2}
+            endif
+    return rules
+\end{lstlisting}
+                Для описания алгоритма предварительной оптимизации таблиц потоков необходимо ввести операцию {\bf Optimise}, которая на вход получает
+                корень дерева исходной таблицы потоков, а затем рекурсивно объединяет все похожие правила с помощью процедуры {\bf Same}. 
+\begin{lstlisting}[float=htb]
+procedure Optimise(node):
+    if not isleaf(node) then
+        for all val_1 in node.edges do
+            for all val_2 in node.edges do
+                if val_1 not equal val_2 then
+                    node.rules += Same(node(val_1), node(val_2))
+                endif
+        for all val in node.edges do
+            Optimise(node(val))
+\end{lstlisting}
+                После применения процедуры {\bf Optimise} необходимо удалить все листовые вершины, для этого опишем процедуру {\bf Remove}, которая 
+                на вход получает корень дерева, а затем рекурсивно удаляет все листовые вершины в которых не осталось правил.
+\begin{lstlisting}[float=htb]
+procedure Remove(node):
+    if not isleaf(node) then
+        for all val in node.edges do
+            if isleaf(node(val)) and node(val).rules equal {} then
+                remove(node, val)
+            else
+                Remove(node(val))
+            endif
+\end{lstlisting}
+                Тогда полный алгоритм предварительной оптимизации можно описать последовательным применением процедур {\bf Optimize} и {\bf Remove}.
+
+\subsection{Алгоритм оптимального кеширования}
+                В этом разделе представлен адаптированный алгоритм оптимального кеширования. 
+                Основной его частью является операция разделения исходной таблицы потоков на две. 
+                Для применения дальнейшего алгоритма необходимо построить изначальное дерево с дополнительными полями в узлах.
+                \begin{itemize}
+                    \item Получить набор вершин дерева.
+                    \item Отсортировать этот набор в невозрастающем порядке сумм вероятностей вершин.
+                    \item Создать второй набор вершин, из которого в последствии будет строится дерево.
+                    \item Создать счетчик, хранящий сумму вероятностей вершин во втором наборе вершин.
+                    \item Получить первую вершину с максимальной суммой вероятностей.
+                    \item Увеличить счетчик на его вероятность.
+                    \item Добавить эту вершину во второй набор вершин и удалить из первого.
+                    \item Повторять последние три операции, пока счетчик меньше 0.95.
+                    \item Построить дерево из второго набора вершин.
+                \end{itemize}
+                После выполнения этих операций мы получаем два набора вершин, первый из которых отвечает за второстепенное дерево, а второй за первостепенное.
+                Первостепенное дерево преобразуется в программу на языке ассемблера, которая загружается в СПУ.
+
+                \subsubsection{Алгоритм получения множества первостепенных вершин}
+                    Подробнее опишем алгоритмы, необходимые для реализации алгоритма оптимального кеширования.
+                    Для начала опишем процедуру {\bf GetList}, которая на вход получает корневую вершину дерева \(Tree.root\). 
+                    На выходе мы получаем список вершин в которых есть правила.
+\begin{lstlisting}
+procedure GetList(node):
+    nodes = {}
+    if node.rules not equal {} then
+        nodes += node
+    endif
+    for all val in node.edges do
+        nodes += GetList(node(val))
+
+    return nodes
+\end{lstlisting}
+                    Также необходима процедура выбора первостепенных вершин {\bf GetBest}, которая на вход получает отсортированный список вершин,
+                    и возвращает список первостепенных вершин.
+\begin{lstlisting}
+procedure GetBest(nodes):
+    counter = 0.0
+    best_nodes = {}
+    for all node in nodes do
+        if counter is greater 0.95 then
+            break
+        endif
+        counter += node.prob
+        best_nodes += node
+    return best_nodes
+\end{lstlisting}
     \chapter{Экспериментально исследование реализованных алгоритмов сжатия данных}
         При проведении экспериментального исследования ставились следующие цели:
         \begin{itemize}
@@ -455,6 +589,27 @@
                 \item Провести эмуляцию работы сетевого процессорного устройства с полученными программами на языке ассемблера.
                 \item Провести оценку результатов полученных в данном эксперименте.
             \end{enumerate}
+            \subsection{Данные экспериментального исследования}
+                Для проведения экспериментального исследования мы будем использовать несколько вариантов таблиц потоков. 
+                В этом разделе представлены шаблоны таблиц потоков, которые будут использованы для экспериментального исследования.
+                \begin{itemize}
+                    \item Первый шаблон~--- шаблон правила таблицы потока содержит значения трех атрибутов: номер входного порта, MAC-адрес назначения и MAC-адрес источника.
+                    \item Второй шаблон~--- схема правила таблицы потока содержит значения двух атрибутов: Адрес назначения IPv4 и адрес источника IPv4.
+                    \item Третий шаблон~--- таблица правил содержит пять атрибутов: номер входного порта, MAC-адрес назначения, ID VLAN, ID заголовка L3-уровня (EtherType) и IPv4-адрес назначения.
+                \end{itemize}
+                Ниже представлен пример входной таблицы данных:
+\begin{lstlisting}
+{SRC_MAC , DST_MAC , INSTR}
+{SRC_MAC , DST_MAC , INSTR}
++---+-----------+-----------+--------------+
+| 1 | :12       | :10:1     | goto_table 1 |
++---+-----------+-----------+--------------+
+| 1 | :23:45    | :20       | goto_table 1 |
++---+-----------+-----------+--------------+
+| 1 | :0        | :1        | goto_table 1 |
++---+-----------+-----------+--------------+
+\end{lstlisting}
+                
         \section{Результаты экспериментального исследования}
         \section{Выводы}
     \chapter{Заключение}

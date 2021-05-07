@@ -66,18 +66,15 @@
 }
 \maketitle
     \begin{abstract}
-        This paper addresses the problem of packet classification within a network processor (NP) architecture 
-        without the separate associative device.
-        By the classification, we mean the process of identifying a packet by the header.
-        The classification stage requires the implementation of data structures to store the flow tables.
-        In our work we consider the NP without the associative memory. 
-        Flow tables are represented by an assembly language program in the NP. For translating flow tables into assembly language programs,
-        a tables translator was used. 
-        The main reason for implementing data compression algorithms in a flow table translator is that nowadays 
-        flow tables can weight up to tens of megabytes.
-        In this work we describe the data compression algorithms: Optimal rule caching, recursive end-point cutting and
-        bit string compression. An evaluation of the implemented data compression algorithms was performed on a 
-        simulation model of the NP.
+        This   paper   addresses   the   problem   of   packet classification  within  a  network  processor  (NP)  
+        architecture without the separate associative device. By the classification, we  mean  the  process  of  
+        identifying  a  packet  by  its  header.The classification stage requires the implementation of data 
+        structures  to  store  the  flow  tables.  In  our  work  we  consider the  NP  without  the  associative  memory.  
+        Flow  tables  are represented by an assembly language program in the NP. For translating  flow  tables  into  assembly  
+        language  programs,  a tables translator was used. The main reason for implementing data  compression  algorithms  in  a  
+        flow  tables  translator  is that  modern  flow  tables  can  take  up  to  tens  of  megabytes. In  this  paper  we  
+        describe  the  following  data  compression algorithms: Optimal rule caching, recursive end-point cutting and common data compression algorithms. 
+        An evaluation of the implemented data compression algorithms was performed on a simulation model of the NP.
     \end{abstract}
     
     \begin{IEEEkeywords}
@@ -86,21 +83,21 @@
 
     \section{Introduction}
         At present, software-defined networks (SDN) are in active development and require high-performance switches~\cite{smel2012open}.
-        The main functional element of the high-performance SDN switch is a programmable network processor (NP).
-        The network processor is a system-on-chip specialized for network packet processing. In our work we consider
-        a programmable NP. By programmable we mean such NP, that supports changing the packet processing program 
-        and the set of processed header fields on the fly. 
-        
-        In this article we discuss data compression algorithms used for flow tables. 
-        Flow tables are needed for packet classification process. A flow table is the set of rules defined
-        by OpenFlow protocol. Each rule contains a match field, a bit string by witch a packet can be identified 
-        and a set of actions, that the NP performs on this packet.
-        Classification is the process of the identification of a network packet by its header. 
-    
-        This article has the following structure: in second section we introduce problem, in third section we introduce
-        the NP architecture and flow tables translator, in fourth section we describe related work, in fifth section 
-        we describe data compression algorithm implementation and in sixth section we introduce our evaluation methodology. 
-    
+        The main functional element of the high-performance SDN switch is a programmable network processor (NP). 
+        The network processor is a system-on-chip specialized for network packet processing. 
+        In this work we consider a programmable NP. A programmable NP is one that supports on-the-fly modification of the packet 
+        processing program and the set of header fields to be processed. 
+
+        In this article we discuss data compression algorithms used for flow tables. Flow tables are needed for packet classification process. 
+        A flow table is the set of rules defined by OpenFlow protocol. OpenFlow is one of the most common protocols 
+        for controlling a network SDN switch. This paper considers OpenFlow version 1.3~\cite{openflow}. Each rule contains a match field, 
+        a bit string by witch a packet can be identified and a set of actions, that the NP performs on this packet. 
+        Classification is the process of the identification of a network packet by its header.
+
+        This article has the following structure: in second section we introduce problem, in third section we introduce 
+        the NP architecture and flow tables translator, in fourth section we describe related work, in fifth section we
+        describe data compression algorithm implementation and in sixth section we introduce our evaluation methodology.
+
     \section{The problem}
     \label{sect:problem}
         Let us consider OpenFlow tables formalisation. An ordered set of all considered attributes is denoted as \(I=\{m_1,m_2,\ldots,m_k\}\). 
@@ -233,7 +230,7 @@
        \begin{table*}[!t]
            \centering
             \caption{Data compression algorithms comparison}\label{tab:tab1}
-            \begin{tabular}{|m{3.5cm}|m{2.5cm}|m{2cm}|m{3.5cm}|m{4cm}|}
+            \begin{tabularx}{|m{3.5cm}|m{2.5cm}|m{2cm}|m{3.5cm}|m{4cm}|}
                 \hline
                 \bf Name & \bf complexity of construction  & \bf Степень сжатия & \bf Внешняя память & \bf Необходимость декомпрессии \\
                 \hline

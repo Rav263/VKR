@@ -5,6 +5,9 @@
 \usepackage[backend=bibtex]{biblatex}
 \usepackage{fontspec}
 \usepackage[final]{graphicx}
+\usepackage{tabularx,booktabs}
+\newcolumntype{C}{>{\centering\arraybackslash}X} % centered version of "X" type
+\setlength{\extrarowheight}{3pt}
 \usepackage{float}
 \usepackage{subcaption}
 \usepackage{listings}
@@ -108,7 +111,7 @@
         Flow tables are represented by a set of rules \(R=\{r_1,r_2,\ldots,r_n\}\). With every rule \(r_i\) binding the features:
         \begin{itemize}
             \item An index \(i\);
-            \item A priority \(p_i \in \mathbb{Z}_+\);
+            \item A priority \(p_i \in Z_+\);
             \item A vector of values of attributes \(f_i=\{f_i^1,f_i^2,\ldots,f_i^k\}\), where \(f_i^j\) is an attribute value \(m_j\in I\). % и \(f_i^j\in D(m_j)\cup\{*\}\), \(j=\overline{1,k}\).
             \item A set of actions \(A_i = \{a_1, a_2, \ldots, a_z\} \).
         \end{itemize}
@@ -192,15 +195,7 @@
             Data compression algorithms have evolved over the years. Nowadays compression 
             algorithms can be used in many different ways. In this section we describe
             the algorithms that compress data in binary format.
-            There are most known of them:
-            
-            \begin{itemize}
-                \item Huffman codding,
-                \item JPEG,
-                \item LWZ,
-                \item zip.
-            \end{itemize}
-  
+            There are most known of them: Huffman codding, JPEG, LWZ, zip.
             These algorithms require decompression for data usage. And this is why
             we will not use them in our flow table translator.
         
@@ -214,8 +209,7 @@
         \subsection{Recursive end point cutting}
             Recursive end-point cutting algorithm is based on HyperSplit tree usage. Compressing is performed by destroying duplication rules~\cite{chang2019fast}.
             This algorithm permits operations with flow tables without full rebuilding tree.
-
-            By rules duplication we understand the folowing rules:
+            By rules duplication we understand the following rules:
             \begin{itemize}
                 \item A rule, storing in node duplicates of the rules in leaf nodes. (particle duplication).
                 \item A rule, storing in node duplicates of the rules in all leafs nodes. (full duplicating rule).
@@ -225,34 +219,30 @@
             The deleted duplicate rules are then collected into a second rule table, called a recursive table, to build a second tree. 
             It is possible that duplicate rules still exist in the second tree, and some of them are also removed 
             and used to build the third tree. 
+
             This tree building process is performed recursively while there are duplicate rules in the last tree.
         \section {Algorithms comparison}
-       \begin{table*}[!t]
+        \begin{table*}[!t]
            \centering
             \caption{Data compression algorithms comparison}\label{tab:tab1}
-            \begin{tabularx}{|m{3.5cm}|m{2.5cm}|m{2cm}|m{3.5cm}|m{4cm}|}
-                \hline
-                \bf Name & \bf complexity of construction  & \bf Степень сжатия & \bf Внешняя память & \bf Необходимость декомпрессии \\
-                \hline
-                Алгоритм оптимального кеширования & $O(N^2)$ & \(0.1 \ldots 0.9\) & да & нет \\
-                \hline
-                Алгоритм рекурсивного удаления & $O(N*log(N))$ & \(0.1\) & нет & нет \\
-                \hline
-                Алгоритм с использованием битовых строк & $O(\frac{W}{K}*L)$ & \(0.5\) & нет & нет \\
-                \hline
-                Распространённые алгоритмы & $O(K*\log_2{N})$ & \(0.1 \ldots 0.8\) & нет & да \\
-                \hline
-            \end{tabular}
+            \begin{tabularx}{\textwidth}{@{}l*{10}{C}c@{}} %{|m{3.5cm}|m{2.5cm}|m{2cm}|m{3.5cm}|m{4cm}|}
+                \toprule
+                \bf Name & \bf complexity of construction  & \bf Compression rate & \bf CPU memory usage & \bf Decompression needed \\
+                \midrule
+                Optimal rule caching& $O(N^2)$ & \(0.1 \ldots 0.9\) & yes & no \\
+                Recursive end-point cutting & $O(N*log(N))$ & \(0.1\) & no & no \\
+                Common data compression algorithms & $O(K*\log_2{N})$ & \(0.1 \ldots 0.8\) & no & yes \\
+                \bottomrule
+            \end{tabularx}
         \end{table*}
-        
-        У каждого рассмотренного алгоритма сжатия есть свои достоинства и недостатки, рассмотрим их:
+        Let us describe data compression algorithms comparison in table~\ref{tab:tab1}. Each algorithm has its own pros and cons.
+
         \begin{enumerate}
-            \item \textbf{Алгоритм оптимального кеширования} \(-\) имеет наибольший коэффициент сжатия, и быстро реализуем в рассматриваемой архитектуре сетевого процессорного устройства. 
-                Необходимость использования внешней памяти накладывает дополнительные расходы на обработку некоторых пакетов.
-            \item \textbf{Алгоритм рекурсивного удаления} \(-\) имеет наименьший коэффициент сжатия,
-                реализуем сложнее, чем алгоритм оптимального кеширования. При этом данный алгоритм не требует использования внешней памяти.
-            \item \textbf{Алгоритм с использованием битовых строк} \(-\) имеет средний коэффициент сжатия, но при этом трудно реализуем в рассматриваемой архитектуре сетевого процессорного устройства.
-            \item \textbf{Распространённые алгоритмы сжатия} \(-\) в среднем имеют хорошие коэффициенты сжатия, но при этом требуется декомпрессия данных.
+            \item \textbf{Optimal  rule  caching}~---~has the highest compression ratio, and is quickly implemented in the considered NP. 
+                The need to use external memory imposes additional overhead on some packet processing.
+            \item \textbf{Recursive end-point cutting}~---~has the lowest compression ratio, it is more difficult to implement 
+                than the optimal rule caching algorithm. Moreover,this algorithm does not require the use of external memory.
+            \item \textbf{Common data compression algorithms}~---~have good compression ratios on average, but require data decompression.
         \end{enumerate}
   
     \section{Our solution}
@@ -306,15 +296,62 @@
             After performing this operations we get the set of nodes. We could build first tree
             from second set of rules and second tree from first set of nodes. After this  we need to translate the
             first tree into an assembly language program.
+            \subsubsection{Notation used}
+            Let \(node1, node2\)~---~tree vertices, \(value\)~---~some feature value. Let’s introduce the following notations:
+            \begin{itemize}
+                \item \(Tree.root\)~---~the root node of the tree \(Tree\).
+                \item \(node_1(value)\)~---~the descendant of the node \(node_1\), connected to it by an arc with the mark value.
+                \item \(node_1.rules\)~---~set of rules corresponding to node \(node_1\).
+                \item \(node_1.edges\)~---~set of marks of arcs coming from node \(node_1\).
+                \item \(node_1.prob\)~---~an amount of probabilities of rules.
+                \item \(copy(node_1, val, node_2)\)~---~a procedure that adds to the node \(node_1\) a descendant with an arc marked value, 
+                    copying the tree that forms the node \(node_2\).
+                \item \(equals(node_1, node_2)\)~---~function that returns \(true\) if the trees formed 
+                    by nodes \(node_1\) and \(node_2\) are the same, otherwise it returns \(false\). 
+                    The comparison takes into account the rule sets and arc labels associated with the nodes.
+                \item \(same(rule_1, rule_2)\)~---~function that returns \(true\) if rules are \textbf{same}.
+                \item \(isleaf(node_1)\)~---~function that returns \(true\) if \(node_1\)~---~tree leaf, otherwise it returns \(false\).
+            \end{itemize}
+            \subsubsection{Flow table optimization algorithm}
+            Let us introduce procedure \textbf{Same} (Listing~\ref{lst:same}), it returns a set of rules that are a union of \textbf{same} rules in the sets of two nodes. 
+
+\begin{lstlisting}[float=htb,caption=Procedure for obtaining a set of rules derivedfrom the same rules,label=lst:same]
+procedure Same(node_1, node_2):
+    rules = {}
+    for all rule_1 in node_1.rules do
+        for all rule_2 in node_2.rules do
+            if same(rule_1, rule_2) then
+                rules += {rule_1 union rule_2}
+            endif
+    return rules
+\end{lstlisting}
+
+            Let us introduce flow table optimization algorithm. It can be describe by procedure \textbf{Optimize} (Listing~\ref{lst:optim}), 
+            where \textbf{node}~---~tree node. For optimizing flow table we need to perform this procedure to \(Tree.root\).
+
+\begin{lstlisting}[float=htb,caption=Procedure for optimizing the tree,label=lst:optim]
+procedure Optimize(node):
+    if not isleaf(node) then
+        for all val_1 in node.edges do
+            for all val_2 in node.edges do
+                if val_1 not equal val_2 then
+                    node.rules += Same(node(val_1), node(val_2))
+                endif
+        for all val in node.edges do
+            Optimize(node(val))
+    endif
+\end{lstlisting}
+
     \section{Evaluation}
+        \subsection{Evaluation methodology}
         In this section we talk about evaluation methodology. Flow table compression algorithms can be evaluated by an 
         assembly language program evaluation, from the flow tables translator with implementing
         this flow table compression algorithm.
         We used the following parameters in our evaluation:
         \begin{itemize}
-            \item memory usage by assembly language program.
-            \item middle time of network packet processing in NP cycles.
-            \item maximum time of network packet processing in NP cycles.
+            \item Memory usage by assembly language program.
+            \item Average time of network packet processing in NP cycles.
+            \item Maximum time of network packet processing in NP cycles.
         \end{itemize}
         
         The described analysis requires to execute the following actions for each flow table.
@@ -322,16 +359,41 @@
         \begin{enumerate}
             \item Choose a flow table for this experiment.
             \item Translate the flow table using flow tables translator implementation based on:
-                \subitem $-$ LPM tree;
-                \subitem $-$ AVL tree;
-                \subitem $-$ Our flow table compression algorithm.
+                LPM tree, AVL tree, Our flow table compression algorithm.
             \item Execute simulation on NP simulation model.
             \item Evaluate results.
         \end{enumerate}
-
+        \subsection{Evaluation data}
+            Several variants of the flow tables should be used for the evaluation. 
+            In this section, we will introduce the flow table templates.
+            \begin{itemize}
+                \item The first pattern~---~a flow table rule pattern contains the values of three attributes: 
+                    input port number,destination MAC address and source MAC address.
+                \item The second pattern~---~a flow table rule pattern contains the values of two attributes: 
+                    IPv4 destination address and IPv4 source address.
+                \item The third pattern~---~a flow table contain five at-tributes: 
+                    input port number, destination MAC address, VLAN ID, L3-level header ID (EtherType) and destination IPv4 address.
+            \end{itemize}
+            There is example of input data (Listing~\ref{lst:table}).
+\begin{lstlisting}[float=htb,caption=Example of input data for input of a flow table,label=lst:table]
+{SRC_MAC , DST_MAC , INSTR}
+{SRC_MAC , DST_MAC , INSTR}
++---+-----------+-----------+--------------+
+| 1 | :12       | :10:1     | goto_table 1 |
++---+-----------+-----------+--------------+
+| 1 | :23:45    | :20       | goto_table 1 |
++---+-----------+-----------+--------------+
+| 1 | :0        | :1        | goto_table 1 |
++---+-----------+-----------+--------------+
+\end{lstlisting}
+ 
     \section{Future work}
-        In the future we will refine evaluation data. We expect less memory usage with our compression algorithm implemented
-        into flow table translator. After this we could research possibility of TCAM memory implementation and use this 
-        compression algorithms for it.
- \printbibliography{}
+        In the future we will refine evaluation data. 
+        We expect less memory usage with our compression algorithm implemented into flow table translator. 
+        In the first experiments we conducted, we obtained results showing a significant reduction in the amount 
+        of memory usage using the data compression algorithm. After this we could research possibility 
+        of TCAM memory implementation and use this compression algorithms for it.
+    \section{Acknowledgements}
+        This work is partially supported by the Russian Foundation for Basic Research under grant 19-07-01076.
+\printbibliography{}
 \end{document}

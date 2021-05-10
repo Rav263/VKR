@@ -2,7 +2,7 @@
 
 %\usepackage[russian]{babel}
 \usepackage[justification=centering]{caption}
-\usepackage[backend=bibtex]{biblatex}
+\usepackage[backend=bibtex,sorting=none]{biblatex}
 \usepackage{fontspec}
 \usepackage[final]{graphicx}
 \usepackage{tabularx,booktabs}
@@ -10,6 +10,7 @@
 \setlength{\extrarowheight}{3pt}
 \usepackage{float}
 \usepackage{subcaption}
+\usepackage{adjustbox}
 \usepackage{listings}
 \usepackage{array}
 \usepackage{xcolor}
@@ -221,7 +222,7 @@
             and used to build the third tree. 
 
             This tree building process is performed recursively while there are duplicate rules in the last tree.
-        \section {Algorithms comparison}
+        \subsection {Algorithms comparison}
         \begin{table*}[!t]
            \centering
             \caption{Data compression algorithms comparison}\label{tab:tab1}
@@ -344,37 +345,50 @@ procedure Optimize(node):
 
     \section{Evaluation}
         \subsection{Evaluation methodology}
-        In this section we talk about evaluation methodology. Flow table compression algorithms can be evaluated by an 
-        assembly language program evaluation, from the flow tables translator with implementing
-        this flow table compression algorithm.
+        % Добавить про то почему мы оцениваем программую
+        In this section we describe evaluation methodology. Flow table compression algorithms can be evaluated by an 
+        assembly language program evaluation. This is so because flow tables translator with implemented data compression algorithms 
+        translates flow table into an assembly language program.
+        % Переписать кусок по английски
         We used the following parameters in our evaluation:
         \begin{itemize}
-            \item Memory usage by assembly language program.
+            \item An assembly language program memory usage%Memory usage by assembly language program.
             \item Average time of network packet processing in NP cycles.
             \item Maximum time of network packet processing in NP cycles.
         \end{itemize}
         
-        The described analysis requires to execute the following actions for each flow table.
+        The described analysis requires doing the following actions for each flow table.
 
         \begin{enumerate}
             \item Choose a flow table for this experiment.
             \item Translate the flow table using flow tables translator implementation based on:
                 LPM tree, AVL tree, Our flow table compression algorithm.
-            \item Execute simulation on NP simulation model.
+            \item Execute simulation on the NP simulation model.
             \item Evaluate results.
         \end{enumerate}
+        \subsubsection{Memory usage calculation method}
+            The flow tables translator tool use intermediate flow table representation as trees.
+            Each node of the tree is translated into assembly language program part.
+            Fully assembled assembly language program has \(N\) instructions.
+            Every instruction uses \(128~bits\) of memory. Therefore memory usage defined as \(M\)
+            can be calculated as:
+            
+            \[M = 128 * N\]
+
+            In our evaluation results we use \(KBytes\) to represent memory usage units. 
         \subsection{Evaluation data}
             Several variants of the flow tables should be used for the evaluation. 
+            % Добавить про то почему должны быть разные кейсы
             In this section, we will introduce the flow table templates.
             \begin{itemize}
                 \item The first pattern~---~a flow table rule pattern contains the values of three attributes: 
-                    input port number,destination MAC address and source MAC address.
+                    an input port number, a destination MAC address and a source MAC address.
                 \item The second pattern~---~a flow table rule pattern contains the values of two attributes: 
-                    IPv4 destination address and IPv4 source address.
-                \item The third pattern~---~a flow table contain five at-tributes: 
-                    input port number, destination MAC address, VLAN ID, L3-level header ID (EtherType) and destination IPv4 address.
+                    an IPv4 destination address and an IPv4 source address.
+                \item The third pattern~---~a flow table contains five attributes: 
+                    an input port number, a destination MAC address, a VLAN ID, a L3-level header ID (EtherType) and a destination IPv4 address.
             \end{itemize}
-            There is example of input data (Listing~\ref{lst:table}).
+            An example of input data represented in Listing~\ref{lst:table}.
 \begin{lstlisting}[float=htb,caption=Example of input data for input of a flow table,label=lst:table]
 {SRC_MAC , DST_MAC , INSTR}
 {SRC_MAC , DST_MAC , INSTR}
@@ -386,8 +400,109 @@ procedure Optimize(node):
 | 1 | :0        | :1        | goto_table 1 |
 +---+-----------+-----------+--------------+
 \end{lstlisting}
- 
-    \section{Future work}
+        \subsection{Evaluation results}
+            We have performed evaluation on simulation model of the NP. 
+            This evaluation shows that our solution allowed to use several times less memory of the NP.
+            
+            We carried out our research for different sized flow tables. 
+            Currently, the maximum size of the flow table is 6000 rules with compression. 
+            Flow table without compression can contain only about 1500 rules.
+
+            Optimal caching has the best compression rate (Fig.~\ref{graph:compmem}), but the worst average number of instructions required for processing one packet (Fig.~\ref{graph:compinst}).
+            This can be explained by the CPU calling process take up a lot of instructions.
+
+            Recursive end-point cutting has less compression rate then optimal caching (Fig.~\ref{graph:compmem}) 
+            and better average number of instruction required for processing one packet (Fig.~\ref{graph:compinst}).
+            \begin{figure*}[!t]
+                \centering
+            \begin{subfigure}[b]{0.45\textwidth}
+            %\begin{adjustbox}{width=\linewidth}
+            \begin{tikzpicture}
+            \begin{axis}[
+                width=0.9\linewidth,
+                height=0.7\linewidth,
+                %ylabel={Объём памяти [Кбайт]},
+                %xlabel={Количество правил},
+                %y label style={at={(-0.05, 0.5)}},
+                %ymin=0, ymax=1700,
+                %xmin=0, xmax=6500,
+                %xmode=log,
+                %log basis x={2},
+                %xtick={1000, 2000, 3000, 4000, 5000, 6000},
+                %ytick={0, 200, 400, 600, 800, 1000, 1200, 1400, 1600},
+                %legend pos=north west,
+                %ymajorgrids=true,
+                %grid style=dashed,
+                %cycle list name=color list
+                x tick label style={
+		            /pgf/number format/1000 sep=},
+	            ylabel=Average memory usage,
+	            enlargelimits=0.05,
+	            legend style={at={(1.4, 1.3)},
+	            anchor=north,legend columns=-1},
+	            ybar interval=0.7,
+                ] 
+                \addplot+[] coordinates{(2000, 303.58)(4000, 500.58)(6000, 904.71)(8000, 1)};
+                \addplot+[] coordinates{(2000, 546.58)(4000, 1093.58)(6000, 1406.25)(8000, 1)};
+                \addplot+[] coordinates{(2000, 246.58)(4000, 382.58)(6000, 421.71)(8000, 1)};
+                \addplot+[, color=green] coordinates{(2000, 273.58)(4000, 492.58)(6000, 773.71)(8000, 1)};
+                \addplot+[mark=none, color=black] coordinates{(2000, 512)(4000, 512)(6000, 512)(8000, 1)};
+                \legend{AVL tree, No compression, Optimal caching, REC, NP limit}
+     
+            \end{axis}
+            \end{tikzpicture}
+                \captionsetup{justification=centering}
+                \caption{Network processor memory usage depends different flow table sizes.}
+                \label{graph:compmem}
+            %\end{adjustbox}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[b]{0.45\textwidth}
+            %\begin{adjustbox}{width=\linewidth}
+            \begin{tikzpicture}
+            \begin{axis}[
+                width=0.9\linewidth,
+                height=0.7\linewidth,
+                %x tick label style={
+		        %    /pgf/number format/1000 sep=}, 
+                %ylabel={Среднее количество тактов},
+                %xlabel={Количество правил},
+                %y label style={at={(-0.05, 0.5)}},
+                %ymin=0, ymax=90,
+                %xmin=0, xmax=6500,
+                %xmode=log,
+                %log basis x={2},
+                %xtick={1000, 2000, 3000, 4000, 5000, 6000},
+                %ytick={0, 10, 20, 30, 40, 50, 60, 70, 80},
+                %legend pos=north west,
+                %ymajorgrids=true,
+                %grid style=dashed,
+                %cycle list name=color list
+                x tick label style={
+		            /pgf/number format/1000 sep=},
+	            ylabel=Average number of instructions,
+	            enlargelimits=0.05,
+	            legend style={at={(0.5,-0.3)},
+	            anchor=north,legend columns=-1},
+	            ybar interval=0.7,
+                ] 
+                \addplot+[] coordinates{(2000,26)(4000,27)(6000,28)(8000, 1)};
+                \addplot+[] coordinates{(2000,34)(4000,36)(6000,38)(8000, 1)};
+                \addplot+[] coordinates{(2000,54)(4000,58)(6000,80)(8000, 1)};
+                \addplot+[color=green] coordinates{(2000,28)(4000,30)(6000,31)(8000, 1)};
+                \legend{}
+                %\legend{АВЛ дерево, Без сжатия, Алгоритм ОК, Алгоритм REC}
+     
+            \end{axis}
+            \end{tikzpicture}
+                \captionsetup{justification=centering}
+                \caption{Average number of instructions for processing one packet depends flow table size}
+                \label{graph:compinst}
+          %  \end{adjustbox}
+            \end{subfigure}
+        \end{figure*}
+
+    \section{Future works}
         In the future we will refine evaluation data. 
         We expect less memory usage with our compression algorithm implemented into flow table translator. 
         In the first experiments we conducted, we obtained results showing a significant reduction in the amount 

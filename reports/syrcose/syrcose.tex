@@ -353,8 +353,7 @@ procedure Optimize(node):
         We used the following parameters in our evaluation:
         \begin{itemize}
             \item An assembly language program memory usage%Memory usage by assembly language program.
-            \item Average time of network packet processing in NP cycles.
-            \item Maximum time of network packet processing in NP cycles.
+            \item An assembly language program average number of instructions requires for one packet processing.%Average time of network packet processing in NP cycles.
         \end{itemize}
         
         The described analysis requires doing the following actions for each flow table.
@@ -368,8 +367,8 @@ procedure Optimize(node):
         \end{enumerate}
         \subsubsection{Memory usage calculation method}
             The flow tables translator tool use intermediate flow table representation as trees.
-            Each node of the tree is translated into assembly language program part.
-            Fully assembled assembly language program has \(N\) instructions.
+            Each node of the tree is translated into an assembly language program part.
+            Fully assembled from parts assembly language program has \(N\) instructions.
             Every instruction uses \(128~bits\) of memory. Therefore memory usage defined as \(M\)
             can be calculated as:
             
@@ -378,6 +377,7 @@ procedure Optimize(node):
             In our evaluation results we use \(KBytes\) to represent memory usage units. 
         \subsection{Evaluation data}
             Several variants of the flow tables should be used for the evaluation. 
+            These variants cover most usable network protocols.
             % Добавить про то почему должны быть разные кейсы
             In this section, we will introduce the flow table templates.
             \begin{itemize}
@@ -401,18 +401,19 @@ procedure Optimize(node):
 +---+-----------+-----------+--------------+
 \end{lstlisting}
         \subsection{Evaluation results}
-            We have performed evaluation on simulation model of the NP. 
+            We performed an evaluation on the simulation model of the NP. 
             This evaluation shows that our solution allowed to use several times less memory of the NP.
             
             We carried out our research for different sized flow tables. 
-            Currently, the maximum size of the flow table is 6000 rules with compression. 
+            Currently, the maximum size of a flow table is 6000 rules with compression. 
             Flow table without compression can contain only about 1500 rules.
 
-            Optimal caching has the best compression rate (Fig.~\ref{graph:compmem}), but the worst average number of instructions required for processing one packet (Fig.~\ref{graph:compinst}).
-            This can be explained by the CPU calling process take up a lot of instructions.
+            Optimal caching has the best compression rate (Fig.~\ref{graph:compmem}), 
+            but the worst average number of instructions required to processing one packet (Fig.~\ref{graph:compinst}).
+            This can be explained by necessity to use many instructions to make the CPU call.
 
             Recursive end-point cutting has less compression rate then optimal caching (Fig.~\ref{graph:compmem}) 
-            and better average number of instruction required for processing one packet (Fig.~\ref{graph:compinst}).
+            and better average number of instruction required to processing one packet (Fig.~\ref{graph:compinst}).
             \begin{figure*}[!t]
                 \centering
             \begin{subfigure}[b]{0.45\textwidth}
@@ -502,11 +503,11 @@ procedure Optimize(node):
             \end{subfigure}
         \end{figure*}
 
-    \section{Future works}
-        In the future we will refine evaluation data. 
+    \section{Future work}
+        In the future works we will refine evaluation data. 
         We expect less memory usage with our compression algorithm implemented into flow table translator. 
-        In the first experiments we conducted, we obtained results showing a significant reduction in the amount 
-        of memory usage using the data compression algorithm. After this we could research possibility 
+        In the first experiments conducted, we obtained results showing a significant reduction in the amount 
+        of memory usage with the help the data compression algorithm. After this we could check possibility 
         of TCAM memory implementation and use this compression algorithms for it.
     \section{Acknowledgements}
         This work is partially supported by the Russian Foundation for Basic Research under grant 19-07-01076.
